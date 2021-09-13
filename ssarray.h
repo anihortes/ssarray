@@ -11,8 +11,7 @@
 #include <ostream> // for std::ostream
 #include <cassert> // for std::assert
 #include <cstddef> // for std::size_t
-#include <typeinfo> // for typeid
-
+#include <algorithm> // for std::swap, std::equal
 template <typename valType>
 class SSArray
 {
@@ -34,9 +33,11 @@ public:
     //ctor
     SSArray(size_type size, value_type value)
         : _arrayPtr(new value_type[size]), _arraySize(size){
-        for(int i = 0; i<_arraySize;i++){
+        /*
+         for(size_type i = 0; i<_arraySize;i++){
             _arrayPtr[i] = value;
         }
+        */
     }
 
 /*
@@ -56,8 +57,8 @@ public:
 
     // copy assignment
     SSArray & operator=(const SSArray & rhs){
-        SSArray copy_of_rhs(rhs);
-        arraySwap(copy_of_rhs);
+        SSArray copyRhs(rhs);
+        arraySwap(copyRhs);
         return *this;
     }
 
@@ -93,9 +94,9 @@ public:
 public:
 
     size_type size(){
-
         return end()-begin();
     }
+
     [[nodiscard]] size_type size() const{
         return end() - begin();
     }
@@ -105,7 +106,7 @@ public:
     }
 
     value_type * end(){
-        return begin() + _arraySize;
+        return begin() + _arraySize + 1;
     }
 
     const value_type * begin() const{
@@ -113,7 +114,7 @@ public:
     }
 
     const value_type * end() const{
-        return begin() + _arraySize;
+        return begin() + _arraySize + 1;
     }
 
 private:
@@ -131,11 +132,11 @@ private:
 
 template <class SSArray>
 bool operator==(const SSArray & rhs, const SSArray & lhs){
-    assert(typeid(rhs[0]).name() == typeid(lhs[0]).name());
+    assert(std::equal(rhs.begin(),rhs.end(),lhs.begin()));
     if(rhs.size() == lhs.size()){
         int equalCompare = 0;
         for(int i = 0; i < rhs.size(); i++){
-            if (rhs[i] == rhs[i]) {
+            if (rhs.begin()+i == lhs.begin()+i) {
                 equalCompare++;
             }
         }
@@ -147,27 +148,43 @@ bool operator==(const SSArray & rhs, const SSArray & lhs){
 
 template <class SSArray>
 bool operator!=(const SSArray & rhs, const SSArray & lhs){
-    assert(typeid(rhs[0]).name() == typeid(lhs[0]).name());
+    assert(std::equal(rhs.begin(),rhs.end(),lhs.begin()));
     return !(rhs==lhs);
-};
+}
 
 template <class SSArray>
 bool operator<(const SSArray & rhs, const SSArray & lhs){
-    return !(rhs==lhs);
-};
+    std::size_t counter=0;
+    while(rhs.begin()+counter != rhs.end() && lhs.begin()+counter != lhs.end()){
+        if(rhs[counter]<lhs[counter])
+            return true;
+        else if(rhs[counter]>lhs[counter])
+            return false;
+        else counter++;
+    }
+    return false;
+}
 
 template <class SSArray>
 bool operator<=(const SSArray & rhs, const SSArray & lhs){
-    return !(rhs==lhs);
-};
+    std::size_t counter=0;
+    while(rhs.begin()+counter != rhs.end() && lhs.begin()+counter != lhs.end()){
+        if(rhs[counter]<lhs[counter])
+            return true;
+        else if(rhs[counter]>lhs[counter])
+            return false;
+        else counter++;
+    }
+    return true;
+}
 
 template <class SSArray>
 bool operator>(const SSArray & rhs, const SSArray & lhs){
-    return !(rhs==lhs);
-};
+    return !(rhs <= lhs);
+}
 
 template <class SSArray>
 bool operator>=(const SSArray & rhs, const SSArray & lhs){
-    return !(rhs==lhs);
-};
+    return !(rhs < lhs);
+}
 #endif //SSARRAY_SSARRAY_H
