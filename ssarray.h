@@ -157,6 +157,8 @@ bool operator<(const SSArray<value_type> & lhs, const SSArray<value_type> & rhs)
 template <class SSArray>
 bool operator<=(const SSArray & lhs, const SSArray & rhs){
     if(rhs.size()==0 && lhs.size()!=0) return false;
+    if(lhs.size()==0 && rhs.size()!=0) return true;
+
     std::size_t count=0;
     if(rhs.size()>lhs.size())count=lhs.size();
     else count = rhs.size();
