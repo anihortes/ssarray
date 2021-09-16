@@ -1,7 +1,7 @@
 // ssarray.h
 // A. Harrison Owen
 // Started: 9/10/2021
-// Finished: 9/16/2021
+// Finished: 9/15/2021
 // Semi-Smart Array Class
 //      template smart array class,
 //      can do basic boolean compare operations
@@ -20,7 +20,7 @@ public:
     using value_type = valType;    // value type in array
     using size_type = std::size_t; // size type in array
 
-    //default ctor, size = 8, value = whatever is in memory
+    //default ctor, array size = 8, array values = whatever is in memory
     SSArray(): _arrayPtr(new value_type[8]), _arraySize(8){}
 
     //ctor with specified size
@@ -33,7 +33,6 @@ public:
         for(std::size_t i = 0; i < _arraySize; i++){
             _arrayPtr[i] = value;
         }
-
     }
 
     //copy ctor
@@ -44,25 +43,25 @@ public:
         }
     }
 
-    // copy assignment
+    // copy assignment operator
     SSArray & operator=(const SSArray & rhs){
         SSArray copyRhs(rhs);
         arraySwap(copyRhs);
         return *this;
     }
 
-    // move assignment
+    //move ctor
+    SSArray(SSArray && other) noexcept:
+            _arrayPtr(other._arrayPtr), _arraySize(other._arraySize)
+    {
+        other._arrayPtr = 0;
+        other._arraySize = 0;
+    }
+
+    // move assignment operator
     SSArray & operator=(SSArray && rhs) noexcept{
         arraySwap(rhs);
         return *this;
-    }
-
-    //move ctor
-    SSArray(SSArray && other) noexcept:
-        _arrayPtr(other._arrayPtr), _arraySize(other._arraySize)
-    {
-        other._arrayPtr= 0;
-        other._arraySize=0;
     }
 
     // dctor
@@ -115,6 +114,7 @@ public:
 
 // private data members and functions
 private:
+
     // for copy and move assignment operators
     void arraySwap(SSArray & other) noexcept{
         std::swap(_arrayPtr, other._arrayPtr);
@@ -155,7 +155,7 @@ bool operator!=(const SSArray & lhs, const SSArray & rhs){
 //                     if lhs[n+1] == rhs[n+1] for all n then lhs.size() < rhs.size() returns true
 template <class value_type>
 bool operator<(const SSArray<value_type> & lhs, const SSArray<value_type> & rhs){
-    
+
     // count will be the range of the for-loop
     // compare rhs and lhs sizes and choose smallest one
     std::size_t count=0;
@@ -166,17 +166,18 @@ bool operator<(const SSArray<value_type> & lhs, const SSArray<value_type> & rhs)
         if(lhs[i] < rhs[i]) return true;
         else if(lhs[i] > rhs[i]) return false;
     }
+
     return (lhs.size() < rhs.size());
 }
 
 template <class SSArray>
 bool operator<=(const SSArray & lhs, const SSArray & rhs){
-    return!(rhs < lhs);
+    return !(rhs < lhs);
 }
 
 template <class SSArray>
 bool operator>(const SSArray & lhs, const SSArray & rhs){
-    return(rhs < lhs);
+    return (rhs < lhs);
 }
 
 template <class SSArray>
