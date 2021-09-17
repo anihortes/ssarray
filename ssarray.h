@@ -54,7 +54,7 @@ public:
     SSArray(SSArray && other) noexcept:
             _arrayPtr(other._arrayPtr), _arraySize(other._arraySize)
     {
-        other._arrayPtr = 0;
+        other._arrayPtr = nullptr;
         other._arraySize = 0;
     }
 
@@ -109,6 +109,7 @@ public:
     }
 
     const value_type * end() const{
+        assert(end()-begin() >= 0);
         return begin() + _arraySize;
     }
 
@@ -158,8 +159,8 @@ bool operator<(const SSArray<value_type> & lhs, const SSArray<value_type> & rhs)
 
     // count will be the range of the for-loop
     // compare rhs and lhs sizes and choose smallest one
-    std::size_t count=0;
-    if(rhs.size() > lhs.size())count=lhs.size();
+    std::size_t count = 0;
+    if(rhs.size() > lhs.size()) count = lhs.size();
     else count = rhs.size();
 
     for(std::size_t i = 0; i < count; i++){
